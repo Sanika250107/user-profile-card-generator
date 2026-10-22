@@ -1,0 +1,582 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile Card Generator</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 30px 16px;
+      font-family: Arial, sans-serif;
+      background: #f1f5f9;
+      color: #1e293b;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2563eb;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #64748b;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      align-items: start;
+    }
+
+    .panel, .profile-card, .saved-card {
+      background: white;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px #00000010;
+    }
+
+    label {
+      display: block;
+      margin: 14px 0 6px;
+      font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font: inherit;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    button {
+      margin-top: 12px;
+      padding: 11px 14px;
+      border: none;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.88;
+    }
+
+    .full-button {
+      width: 100%;
+    }
+
+    .secondary {
+      background: #0f766e;
+    }
+
+    .cancel-button {
+      background: #64748b;
+    }
+
+    .delete-button {
+      background: #dc2626;
+    }
+
+    .profile-card {
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    .avatar {
+      width: 90px;
+      height: 90px;
+      margin: 0 auto 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    .skill {
+      display: inline-block;
+      background: #dbeafe;
+      color: #1d4ed8;
+      padding: 6px 10px;
+      border-radius: 20px;
+      margin: 4px;
+      font-size: 13px;
+    }
+
+    .social a {
+      display: inline-block;
+      margin: 8px;
+      color: #2563eb;
+    }
+
+    #status {
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .saved-section {
+      max-width: 1000px;
+      margin: 30px auto;
+    }
+
+    .saved-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 18px;
+    }
+
+    .saved-card {
+      overflow-wrap: anywhere;
+    }
+
+    .saved-card h3 {
+      color: #2563eb;
+    }
+
+    .saved-card p {
+      line-height: 1.5;
+    }
+
+    .profile-id {
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .card-actions button {
+      flex: 1;
+      min-width: 90px;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>User Profile Card Generator</h1>
+  <p class="subtitle">Create, preview, save and manage your profile</p>
+
+  <main class="container">
+    <section class="panel">
+      <h2 id="formHeading">Enter Your Details</h2>
+
+      <form id="profileForm">
+        <label for="name">Full Name *</label>
+        <input
+          id="name"
+          name="name"
+          maxlength="100"
+          required
+          placeholder="Enter your full name"
+        >
+
+        <label for="bio">Bio</label>
+        <textarea
+          id="bio"
+          name="bio"
+          maxlength="500"
+          rows="3"
+          placeholder="Write a short introduction"
+        ></textarea>
+
+        <label for="skills">Skills</label>
+        <input
+          id="skills"
+          name="skills"
+          maxlength="500"
+          placeholder="HTML, CSS, JavaScript"
+        >
+
+        <label for="github">GitHub URL</label>
+        <input
+          id="github"
+          name="github"
+          type="url"
+          placeholder="https://github.com/username"
+        >
+
+        <label for="linkedin">LinkedIn URL</label>
+        <input
+          id="linkedin"
+          name="linkedin"
+          type="url"
+          placeholder="https://linkedin.com/in/username"
+        >
+
+        <button class="full-button" type="submit" id="saveButton">
+          Generate & Save Profile
+        </button>
+
+        <button
+          class="full-button secondary"
+          type="button"
+          id="viewProfiles"
+        >
+          Refresh Saved Profiles
+        </button>
+
+        <button
+          class="full-button cancel-button"
+          type="button"
+          id="cancelEdit"
+          hidden
+        >
+          Cancel Editing
+        </button>
+      </form>
+
+      <p id="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="profile-card">
+      <div class="avatar" id="avatar">U</div>
+      <h2 id="previewName">Your Name</h2>
+      <p id="previewBio">Your bio will appear here.</p>
+
+      <h3>My Skills</h3>
+      <div id="previewSkills">
+        <span class="skill">Your skills</span>
+      </div>
+
+      <div class="social" id="previewSocial"></div>
+    </section>
+  </main>
+
+  <section class="saved-section">
+    <h2>Saved Profiles</h2>
+    <div id="savedProfiles" class="saved-list">
+      <p>Loading saved profiles...</p>
+    </div>
+  </section>
+
+  <script>
+    const form = document.getElementById("profileForm");
+    const statusMessage = document.getElementById("status");
+    const savedProfiles = document.getElementById("savedProfiles");
+    const formHeading = document.getElementById("formHeading");
+    const saveButton = document.getElementById("saveButton");
+    const cancelEditButton = document.getElementById("cancelEdit");
+
+    // Null means we are creating a new profile.
+    // A number means we are editing that saved profile.
+    let editingProfileId = null;
+
+    function updatePreview() {
+      const name = document.getElementById("name").value.trim();
+      const bio = document.getElementById("bio").value.trim();
+
+      const skills = document.getElementById("skills").value
+        .split(",")
+        .map(skill => skill.trim())
+        .filter(Boolean);
+
+      document.getElementById("previewName").textContent =
+        name || "Your Name";
+
+      document.getElementById("previewBio").textContent =
+        bio || "Your bio will appear here.";
+
+      document.getElementById("avatar").textContent =
+        name ? name.charAt(0).toUpperCase() : "U";
+
+      const skillsBox = document.getElementById("previewSkills");
+      skillsBox.replaceChildren();
+
+      if (skills.length === 0) {
+        const span = document.createElement("span");
+        span.className = "skill";
+        span.textContent = "Your skills";
+        skillsBox.appendChild(span);
+      } else {
+        skills.forEach(skill => {
+          const span = document.createElement("span");
+          span.className = "skill";
+          span.textContent = skill;
+          skillsBox.appendChild(span);
+        });
+      }
+
+      const socialBox = document.getElementById("previewSocial");
+      socialBox.replaceChildren();
+
+      ["github", "linkedin"].forEach(id => {
+        const value = document.getElementById(id).value.trim();
+
+        if (!value) return;
+
+        try {
+          const url = new URL(value);
+          const hosts = id === "github"
+            ? ["github.com", "www.github.com"]
+            : ["linkedin.com", "www.linkedin.com"];
+
+          if (
+            ["https:", "http:"].includes(url.protocol) &&
+            hosts.includes(url.hostname.toLowerCase())
+          ) {
+            const link = document.createElement("a");
+            link.href = url.href;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.textContent = id === "github" ? "GitHub" : "LinkedIn";
+            socialBox.appendChild(link);
+          }
+        } catch {
+          // Invalid links are not shown in the preview.
+        }
+      });
+    }
+
+    form.addEventListener("input", updatePreview);
+
+    function resetForm() {
+      form.reset();
+      editingProfileId = null;
+      formHeading.textContent = "Enter Your Details";
+      saveButton.textContent = "Generate & Save Profile";
+      cancelEditButton.hidden = true;
+      updatePreview();
+    }
+
+    function getProfileFormData() {
+      return {
+        name: document.getElementById("name").value.trim(),
+        bio: document.getElementById("bio").value.trim(),
+        skills: document.getElementById("skills").value.trim(),
+        github: document.getElementById("github").value.trim(),
+        linkedin: document.getElementById("linkedin").value.trim()
+      };
+    }
+
+    // Save a new profile or update an existing one.
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+
+      const profile = getProfileFormData();
+      const isEditing = editingProfileId !== null;
+
+      const url = isEditing
+        ? `/api/profiles/${editingProfileId}`
+        : "/api/profiles";
+
+      statusMessage.textContent = isEditing
+        ? "Updating profile..."
+        : "Saving profile...";
+
+      try {
+        const response = await fetch(url, {
+          method: isEditing ? "PUT" : "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(profile)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Could not save the profile.");
+        }
+
+        statusMessage.textContent =
+          result.message + " Profile ID: " + result.id;
+
+        resetForm();
+        await loadProfiles();
+      } catch (error) {
+        statusMessage.textContent = error.message;
+      }
+    });
+
+    // Load the selected profile into the form for editing.
+    function editProfile(profile) {
+      editingProfileId = profile.id;
+
+      document.getElementById("name").value = profile.name || "";
+      document.getElementById("bio").value = profile.bio || "";
+      document.getElementById("skills").value = profile.skills || "";
+      document.getElementById("github").value = profile.github || "";
+      document.getElementById("linkedin").value = profile.linkedin || "";
+
+      formHeading.textContent = "Edit Profile #" + profile.id;
+      saveButton.textContent = "Update Profile";
+      cancelEditButton.hidden = false;
+
+      updatePreview();
+      statusMessage.textContent =
+        "Editing profile #" + profile.id + ". Make your changes and click Update Profile.";
+
+      document.getElementById("name").focus();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    cancelEditButton.addEventListener("click", () => {
+      resetForm();
+      statusMessage.textContent = "Editing cancelled.";
+    });
+
+    // Delete a saved profile after confirmation.
+    async function deleteProfile(profile) {
+      const confirmed = window.confirm(
+        `Delete the profile for "${profile.name}" (ID: ${profile.id})? This cannot be undone.`
+      );
+
+      if (!confirmed) return;
+
+      try {
+        const response = await fetch(`/api/profiles/${profile.id}`, {
+          method: "DELETE"
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Could not delete the profile.");
+        }
+
+        if (editingProfileId === profile.id) {
+          resetForm();
+        }
+
+        statusMessage.textContent = result.message;
+        await loadProfiles();
+      } catch (error) {
+        statusMessage.textContent = error.message;
+      }
+    }
+
+    // Display all profiles stored in SQLite.
+    async function loadProfiles() {
+      savedProfiles.replaceChildren();
+
+      try {
+        const response = await fetch("/api/profiles");
+
+        if (!response.ok) {
+          throw new Error("Could not load saved profiles.");
+        }
+
+        const profiles = await response.json();
+
+        if (profiles.length === 0) {
+          const message = document.createElement("p");
+          message.textContent = "No saved profiles found.";
+          savedProfiles.appendChild(message);
+          return;
+        }
+
+        profiles.forEach(profile => {
+          const card = document.createElement("article");
+          card.className = "saved-card";
+
+          const heading = document.createElement("h3");
+          heading.textContent = profile.name;
+
+          const id = document.createElement("p");
+          id.className = "profile-id";
+          id.textContent = "Profile ID: " + profile.id;
+
+          const bio = document.createElement("p");
+          bio.textContent = profile.bio || "No bio provided.";
+
+          const skills = document.createElement("p");
+          skills.textContent = "Skills: " + (profile.skills || "None");
+
+          card.append(heading, id, bio, skills);
+
+          [
+            ["GitHub", profile.github],
+            ["LinkedIn", profile.linkedin]
+          ].forEach(([label, value]) => {
+            if (!value) return;
+
+            try {
+              const url = new URL(value);
+              const hosts = label === "GitHub"
+                ? ["github.com", "www.github.com"]
+                : ["linkedin.com", "www.linkedin.com"];
+
+              if (
+                ["https:", "http:"].includes(url.protocol) &&
+                hosts.includes(url.hostname.toLowerCase())
+              ) {
+                const link = document.createElement("a");
+                link.href = url.href;
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+                link.textContent = label;
+                link.style.marginRight = "12px";
+                card.appendChild(link);
+              }
+            } catch {
+              // Do not display invalid saved links.
+            }
+          });
+
+          const actions = document.createElement("div");
+          actions.className = "card-actions";
+
+          const editButton = document.createElement("button");
+          editButton.type = "button";
+          editButton.textContent = "Edit";
+          editButton.addEventListener("click", () => {
+            editProfile(profile);
+          });
+
+          const deleteButton = document.createElement("button");
+          deleteButton.type = "button";
+          deleteButton.className = "delete-button";
+          deleteButton.textContent = "Delete";
+          deleteButton.addEventListener("click", () => {
+            deleteProfile(profile);
+          });
+
+          actions.append(editButton, deleteButton);
+          card.appendChild(actions);
+          savedProfiles.appendChild(card);
+        });
+      } catch (error) {
+        const message = document.createElement("p");
+        message.textContent = error.message;
+        savedProfiles.appendChild(message);
+      }
+    }
+
+    document.getElementById("viewProfiles").addEventListener("click", async () => {
+      statusMessage.textContent = "Refreshing saved profiles...";
+      await loadProfiles();
+      statusMessage.textContent = "Saved profiles refreshed.";
+    });
+
+    updatePreview();
+    loadProfiles();
+  </script>
+</body>
+</html>
